@@ -1,0 +1,186 @@
+name = PI Advanced
+description = Precision Intermedia: Install with commonly used features pre-configured for simple client editing sites.  Choose additional packages for common site elements.
+core = 7.x
+project = "piadvanced"
+
+dependencies[] = block
+dependencies[] = contextual
+dependencies[] = dashboard
+dependencies[] = help
+dependencies[] = image
+dependencies[] = list
+dependencies[] = menu
+dependencies[] = number
+dependencies[] = options
+dependencies[] = path
+dependencies[] = taxonomy
+dependencies[] = dblog
+dependencies[] = search
+dependencies[] = shortcut
+dependencies[] = toolbar
+dependencies[] = overlay
+dependencies[] = field_ui
+dependencies[] = file
+dependencies[] = rdf
+
+; essentials
+dependencies[] = cck
+dependencies[] = entity
+dependencies[] = libraries
+dependencies[] = imageapi
+dependencies[] = imageapi_gd
+;dependencies[] = nodequeue
+dependencies[] = module_filter
+dependencies[] = pathauto
+dependencies[] = panels
+dependencies[] = token
+dependencies[] = rules
+dependencies[] = views
+dependencies[] = views_ui
+dependencies[] = webform
+dependencies[] = webform_validation
+
+dependencies[] = jquery_update
+
+; security
+;dependencies[] = captcha
+;dependencies[] = image_captcha
+;dependencies[] = spamicide
+
+; CCK Addons
+dependencies[] = link
+dependencies[] = email
+dependencies[] = filefield_sources
+dependencies[] = date
+dependencies[] = date_popup
+dependencies[] = content_taxonomy
+dependencies[] = content_taxonomy_autocomplete
+
+; client tools
+dependencies[] = ckeditor
+dependencies[] = imce
+dependencies[] = imce_crop
+dependencies[] = imce_mkdir
+dependencies[] = login_destination
+dependencies[] = imagecrop
+
+; clean up
+dependencies[] = db_maintenance
+;dependencies[] = menu_attributes
+dependencies[] = better_exposed_filters
+dependencies[] = extlink
+dependencies[] = stringoverrides
+dependencies[] = taxonomy_manager
+;dependencies[] = superfish
+
+; SEO Package
+dependencies[] = globalredirect
+dependencies[] = page_title
+;dependencies[] = metatag
+;dependencies[] = metatags_quick
+dependencies[] = xmlsitemap
+dependencies[] = xmlsitemap_node
+dependencies[] = xmlsitemap_menu
+dependencies[] = xmlsitemap_taxonomy
+dependencies[] = googleanalytics
+
+;development
+dependencies[] = devel
+dependencies[] = ctools
+;dependencies[] = zenophile
+;dependencies[] = zenophile_sidebars
+
+; trail
+;dependencies[] = imagecache_actions
+
+; SOCAIL Package
+dependencies[] = sharethis
+
+; FEATURE SET Packges
+dependencies[] = feature_set
+dependencies[] = features
+
+;dependencies[] = piadvanced_administrative_unit
+;dependencies[] = piadvanced_administrative_unit_permissions
+;dependencies[] = piadvanced_core
+;dependencies[] = piadvanced_core_permissions
+;dependencies[] = piadvanced_core_ui
+;dependencies[] = piadvanced_toolbar
+
+; TEST PACKAGES
+;dependencies[] = colorbox
+;dependencies[] = css_options
+
+;dependencies[] = date_api
+;dependencies[] = date_popup
+;dependencies[] = date_views
+
+;dependencies[] = multiform
+;dependencies[] = options
+
+files[] = piadvanced.profile
+
+
+
+
+feature_sets[piadvanced_announcements][title] = 'Announcements'
+feature_sets[piadvanced_announcements][description] = 'Add announcements and news items to your website.'
+feature_sets[piadvanced_announcements][icon] = 'feature_set_icons/announcements.png'
+feature_sets[piadvanced_announcements][enable][] = piadvanced_announcements
+feature_sets[piadvanced_announcements][enable][] = piadvanced_announcements_permissions
+feature_sets[piadvanced_announcements][enable][] = piadvanced_announcements_ui
+feature_sets[piadvanced_announcements][enable][] = piadvanced_administrative_unit_announcements
+feature_sets[piadvanced_announcements][disable][] = piadvanced_announcements
+feature_sets[piadvanced_announcements][disable][] = piadvanced_announcements_permissions
+feature_sets[piadvanced_announcements][disable][] = piadvanced_announcements_ui
+feature_sets[piadvanced_announcements][disable][] = piadvanced_administrative_unit_announcements
+
+
+
+feature_sets[piadvanced_slideshow][title] = 'Slideshow'
+feature_sets[piadvanced_slideshow][description] = 'Add a custom slideshow for your homepage.'
+feature_sets[piadvanced_slideshow][icon] = 'feature_set_icons/slideshow.png'
+feature_sets[piadvanced_slideshow][enable][] = flexslider
+feature_sets[piadvanced_slideshow][enable][] = piadvanced_slideshow
+feature_sets[piadvanced_slideshow][enable][] = piadvanced_slideshow_ui
+feature_sets[piadvanced_slideshow][enable][] = piadvanced_homepage_slideshow_node
+feature_sets[piadvanced_slideshow][disable][] = piadvanced_slideshow
+feature_sets[piadvanced_slideshow][disable][] = piadvanced_slideshow_ui
+feature_sets[piadvanced_slideshow][disable][] = piadvanced_homepage_slideshow_node
+feature_sets[piadvanced_slideshow][uninstall][] = piadvanced_homepage_slideshow_node
+
+
+
+feature_sets[piadvanced_gallery][title] = 'Galleries'
+feature_sets[piadvanced_gallery][description] = 'Add photo galleries to your website.'
+feature_sets[piadvanced_gallery][icon] = 'feature_set_icons/gallery.png'
+feature_sets[piadvanced_gallery][enable][] = piadvanced_gallery
+feature_sets[piadvanced_gallery][enable][] = piadvanced_gallery_permissions
+feature_sets[piadvanced_gallery][enable][] = piadvanced_gallery_ui
+feature_sets[piadvanced_gallery][enable][] = piadvanced_administrative_unit_galleries
+feature_sets[piadvanced_gallery][disable][] = piadvanced_gallery
+feature_sets[piadvanced_gallery][disable][] = piadvanced_gallery_permissions
+feature_sets[piadvanced_gallery][enable][] = piadvanced_gallery_ui
+feature_sets[piadvanced_gallery][enable][] = piadvanced_administrative_unit_galleries
+
+
+
+feature_sets[piadvanced_events][title] = 'Calendar and Events'
+feature_sets[piadvanced_events][description] = 'Adds calendars and events to your website.'
+feature_sets[piadvanced_events][icon] = 'feature_set_icons/events.png'
+feature_sets[piadvanced_events][enable][] = piadvanced_events
+feature_sets[piadvanced_events][enable][] = piadvanced_events_permissions
+feature_sets[piadvanced_events][enable][] = piadvanced_events_ui
+feature_sets[piadvanced_events][enable][] = piadvanced_administrative_unit_events
+feature_sets[piadvanced_events][enable][] = fullcalendar
+feature_sets[piadvanced_events][enable][] = fullcalendar_options
+feature_sets[piadvanced_events][enable][] = date
+feature_sets[piadvanced_events][disable][] = piadvanced_events
+feature_sets[piadvanced_events][disable][] = piadvanced_events_permissions
+feature_sets[piadvanced_events][disable][] = piadvanced_events_ui
+feature_sets[piadvanced_events][disable][] = piadvanced_administrative_unit_events
+feature_sets[piadvanced_events][disable][] = fullcalendar
+feature_sets[piadvanced_events][disable][] = fullcalendar_options
+feature_sets[piadvanced_events][disable][] = date
+feature_sets[piadvanced_events][uninstall][] = piadvanced_events_ui
+

@@ -1,0 +1,18 @@
+name = Slideshow
+description = Slideshow
+core = 7.x
+package = piadvanced: Core
+php = 5.2.4
+project = piadvanced
+dependencies[] = image
+dependencies[] = piadvanced_core
+dependencies[] = flexslider
+features[features_api][] = api:1
+features[image][] = piadvanced_slideshow
+
+; Information added by drupal.org packaging script on 2013-10-01
+version = "7.x-1.x-dev"
+core = "7.x"
+project = "piadvanced"
+datestamp = "1380619063"
+

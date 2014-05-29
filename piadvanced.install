@@ -1,0 +1,652 @@
+<?php
+
+define('PIADVANCED_DEFAULT_THEME', 'rubik');
+
+/**
+ * Implements hook_intall().
+ */
+function piadvanced_install() {
+  // configure admin theme settings
+  piadvanced_config_theme();
+  
+  // Create basic content types
+  piadvanced_setup_formats();
+  piadvanced_setup_content_types();
+  piadvanced_setup_taxonomy();
+  piadvanced_setup_fields();
+  
+  // configure some standard blocks
+  piadvanced_blocks();
+  piadvanced_setup_dashboard_blocks();
+  
+  // Configure variables table
+  piadvanced_variable_config();
+
+  // configure navigational elements
+  piadvanced_nav_config();
+  
+  // Configure user permissions
+  piadvanced_user_permissions();
+
+  // Update the menu router information.
+  menu_rebuild();
+  
+  piadvanced_cleanup();
+  
+}
+
+
+/**
+ * Adjust admin theme settings
+ */
+function piadvanced_config_theme() {
+  // Enable the admin theme.
+  db_update('system')
+    ->fields(array('status' => 1))
+    ->condition('type', 'theme')
+    ->condition('name', 'rubik')
+    ->execute();
+  variable_set('admin_theme', 'rubik');
+  variable_set('node_admin_theme', '1');
+}
+
+
+/**
+ * Set default content input types
+ */
+function piadvanced_setup_formats() {
+  // Add text formats.
+  $filtered_html_format = array(
+    'format' => 'filtered_html',
+    'name' => 'Filtered HTML',
+    'weight' => 1,
+    'filters' => array(
+      // URL filter.
+      'filter_url' => array(
+        'weight' => 0,
+        'status' => 1,
+      ),
+      // HTML filter.
+      'filter_html' => array(
+        'weight' => 1,
+        'status' => 1,
+      ),
+      // Line break filter.
+      'filter_autop' => array(
+        'weight' => 2,
+        'status' => 1,
+      ),
+      // HTML corrector filter.
+      'filter_htmlcorrector' => array(
+        'weight' => 10,
+        'status' => 1,
+      ),
+    ),
+  );
+  $filtered_html_format = (object) $filtered_html_format;
+  filter_format_save($filtered_html_format);
+
+  $full_html_format = array(
+    'format' => 'full_html',
+    'name' => 'Full HTML',
+    'weight' => 0,
+    'filters' => array(
+      // URL filter.
+      'filter_url' => array(
+        'weight' => 0,
+        'status' => 1,
+      ),
+      // Line break filter.
+      'filter_autop' => array(
+        'weight' => 1,
+        'status' => 1,
+      ),
+      // HTML corrector filter.
+      'filter_htmlcorrector' => array(
+        'weight' => 10,
+        'status' => 1,
+      ),
+    ),
+  );
+  $full_html_format = (object) $full_html_format;
+  filter_format_save($full_html_format);
+}
+
+
+/**
+ * Set basic content types
+ */
+function piadvanced_setup_content_types() {
+  // Insert default pre-defined node types into the database. For a complete
+  // list of available node type attributes, refer to the node type API
+  // documentation at: http://api.drupal.org/api/HEAD/function/hook_node_info.
+  $types = array(
+    array(
+      'type' => 'page',
+      'name' => st('Basic page'),
+      'base' => 'node_content',
+      'description' => st("Use <em>basic pages</em> for your static content, such as an 'About us' page."),
+      'custom' => 1,
+      'modified' => 1,
+      'locked' => 0,
+    ),
+    array(
+      'type' => 'article',
+      'name' => st('Article'),
+      'base' => 'node_content',
+      'description' => st('Use <em>articles</em> for time-sensitive content like news, press releases or blog posts.'),
+      'custom' => 1,
+      'modified' => 1,
+      'locked' => 0,
+    ),
+  );
+
+  foreach ($types as $type) {
+    $type = node_type_set_defaults($type);
+    node_type_save($type);
+    node_add_body_field($type);
+  }
+
+  /* Insert default pre-defined RDF mapping into the database.
+  $rdf_mappings = array(
+    array(
+      'type' => 'node',
+      'bundle' => 'page',
+      'mapping' => array(
+        'rdftype' => array('foaf:Document'),
+      ),
+    ),
+    array(
+      'type' => 'node',
+      'bundle' => 'article',
+      'mapping' => array(
+        'field_image' => array(
+          'predicates' => array('og:image', 'rdfs:seeAlso'),
+          'type' => 'rel',
+        ),
+        'field_tags' => array(
+          'predicates' => array('dc:subject'),
+          'type' => 'rel',
+        ),
+      ),
+    ),
+  );
+  foreach ($rdf_mappings as $rdf_mapping) {
+    rdf_mapping_save($rdf_mapping);
+  }
+  */
+}
+ 
+ 
+/**
+ * Configure a few basic blocks
+ */
+function piadvanced_setup_taxonomy() { 
+// Create a default vocabulary named "Tags", enabled for the 'article' content type.
+  $description = st('Use tags to group articles on similar topics into categories.');
+  $help = st('Enter a comma-separated list of words to describe your content.');
+  $vocabulary = (object) array(
+    'name' => st('Tags'),
+    'description' => $description,
+    'machine_name' => 'tags',
+    'help' => $help,
+
+  );
+  taxonomy_vocabulary_save($vocabulary);
+
+  $field = array(
+    'field_name' => 'field_' . $vocabulary->machine_name,
+    'type' => 'taxonomy_term_reference',
+    // Set cardinality to unlimited for tagging.
+    'cardinality' => FIELD_CARDINALITY_UNLIMITED,
+    'settings' => array(
+      'allowed_values' => array(
+        array(
+          'vocabulary' => $vocabulary->machine_name,
+          'parent' => 0,
+        ),
+      ),
+    ),
+  );
+  field_create_field($field);
+
+  $instance = array(
+    'field_name' => 'field_' . $vocabulary->machine_name,
+    'entity_type' => 'node',
+    'label' => 'Tags',
+    'bundle' => 'article',
+    'description' => $vocabulary->help,
+    'widget' => array(
+      'type' => 'taxonomy_autocomplete',
+      'weight' => -4,
+    ),
+    'display' => array(
+      'default' => array(
+        'type' => 'taxonomy_term_reference_link',
+        'weight' => 10,
+      ),
+      'teaser' => array(
+        'type' => 'taxonomy_term_reference_link',
+        'weight' => 10,
+      ),
+    ),
+  );
+  field_create_instance($instance);
+}
+
+
+/**
+ * Configure a few basic fields
+ */
+function piadvanced_setup_fields() {
+  // Create an image field named "Image", enabled for the 'article' content type.
+  // Many of the following values will be defaulted, they're included here as an illustrative examples.
+  // See http://api.drupal.org/api/function/field_create_field/7
+
+  $field = array(
+    'field_name' => 'field_image',
+    'type' => 'image',
+    'cardinality' => 1,
+    'translatable' => TRUE,
+    'locked' => FALSE,
+    'indexes' => array('fid' => array('fid')),
+    'settings' => array(
+      'uri_scheme' => 'public',
+      'default_image' => FALSE,
+    ),
+    'storage' => array(
+      'type' => 'field_sql_storage',
+      'settings' => array(),
+    ),
+  );
+  field_create_field($field);
+
+
+  // Many of the following values will be defaulted, they're included here as an illustrative examples.
+  // See http://api.drupal.org/api/function/field_create_instance/7
+  $instance = array(
+    'field_name' => 'field_image',
+    'entity_type' => 'node',
+    'label' => 'Image',
+    'bundle' => 'article',
+    'description' => st('Upload an image to go with this article.'),
+    'required' => FALSE,
+
+    'settings' => array(
+      'file_directory' => 'field/image',
+      'file_extensions' => 'png gif jpg jpeg',
+      'max_filesize' => '',
+      'max_resolution' => '',
+      'min_resolution' => '',
+      'alt_field' => TRUE,
+      'title_field' => '',
+    ),
+
+    'widget' => array(
+      'type' => 'image_image',
+      'settings' => array(
+        'progress_indicator' => 'throbber',
+        'preview_image_style' => 'thumbnail',
+      ),
+      'weight' => -1,
+    ),
+
+    'display' => array(
+      'default' => array(
+        'label' => 'hidden',
+        'type' => 'image',
+        'settings' => array('image_style' => 'large', 'image_link' => ''),
+        'weight' => -1,
+      ),
+      'teaser' => array(
+        'label' => 'hidden',
+        'type' => 'image',
+        'settings' => array('image_style' => 'medium', 'image_link' => 'content'),
+        'weight' => -1,
+      ),
+    ),
+  );
+  field_create_instance($instance);
+}
+
+
+/**
+ * Configure a few basic blocks
+ */
+function piadvanced_blocks($admin_theme = 'rubik') {
+  // Enable some standard blocks.
+  $default_theme = variable_get('theme_default', PIADVANCED_DEFAULT_THEME);
+
+  // clean out any previous entries (in case a sub install profile calls this)
+  db_delete('block')->condition('theme', $default_theme)->execute();
+  db_delete('block')->condition('theme', $admin_theme)->execute();
+
+  $values = array(
+  
+  // Default Theme Blocks
+    array(
+      'module' => 'system',
+      'delta' => 'help',
+      'theme' => $default_theme,
+      'status' => 1,
+      'weight' => 0,
+      'region' => 'help',
+      'pages' => '',
+      'cache' => -1,
+    ),
+  
+  // Admin Blocks
+    array(
+      'module' => 'system',
+      'delta' => 'main',
+      'theme' => $admin_theme,
+      'status' => 1,
+      'weight' => 0,
+      'region' => 'content',
+      'pages' => '',
+      'cache' => -1,
+    ),
+    array(
+      'module' => 'system',
+      'delta' => 'help',
+      'theme' => $admin_theme,
+      'status' => 1,
+      'weight' => 0,
+      'region' => 'help',
+      'pages' => '',
+      'cache' => -1,
+    ),
+
+  );
+  $query = db_insert('block')->fields(array('module', 'delta', 'theme', 'status', 'weight', 'region', 'pages', 'cache'));
+  foreach ($values as $record) {
+    $query->values($record);
+  }
+  $query->execute();
+}
+
+
+/**
+ * Set dashboard blocks into the proper regions
+ */
+function piadvanced_setup_dashboard_blocks() {
+  $defaults = array(
+    'theme' => 'rubik',
+    'status' => 1,
+    'custom' => 0,
+    'visibility' => 0,
+    'pages' => '',
+    'title' => '',
+    'cache' => -1,
+  );
+  /*
+  $blocks = array(
+    array(
+      'module' => 'menu',
+      'delta' => 'menu-piadvanced-new-content',
+      'weight' => -13,
+      'region' => 'dashboard_sidebar',
+    ),
+    array (
+      'module' => 'menu',
+      'delta' => 'menu-piadvanced-new-group',
+      'weight' => -14,
+      'region' => 'dashboard_sidebar',
+    ),
+    array (
+      'module' => 'menu',
+      'delta' => 'menu-piadvanced-admin-quick-links',
+      'weight' => -15,
+      'region' => 'dashboard_sidebar',
+    ),
+    array (
+      'module' => 'search',
+      'delta' => 'form',
+      'weight' => 0,
+      'region' => 'dashboard_sidebar',
+    ),
+    array (
+      'module' => 'views',
+      'delta' => 'piadvanced_admin_content_list-block',
+      'weight' => -14,
+      'region' => 'dashboard_main',
+    ),
+    array (
+      'module' => 'views',
+      'delta' => 'piadvanced_admin_content_list-block_1',
+      'weight' => -15,
+      'region' => 'dashboard_main',
+    ),
+    array (
+      'module' => 'views',
+      'delta' => 'piadvanced_admin_user_list-block',
+      'weight' => 0,
+      'region' => 'dashboard_main',
+    ),
+  );
+  
+
+  foreach($blocks as $block) {
+    $block = array_merge($block, $defaults);
+    db_merge('block')
+      ->key(array(
+        'theme' => $block['theme'],
+        'delta' => $block['delta'],
+        'module' => $block['module'],
+      ))
+      ->fields(array(
+        'weight' => $block['weight'],
+        'status' => 1,
+        'region' => $block['region'],
+        'pages' => '',
+      ))
+      ->execute();
+  }
+  */
+}
+
+
+/**
+ * Add any navigational elements to the appropriate areas
+ */
+function piadvanced_variable_config() {
+  // Enable user picture support and set the default to a square thumbnail option.
+  variable_set('user_pictures', '0');
+  variable_set('user_picture_dimensions', '1024x1024');
+  variable_set('user_picture_file_size', '800');
+  variable_set('user_picture_style', 'thumbnail');
+
+  // Allow visitor account creation with administrative approval.
+  variable_set('user_register', 0);
+  
+  variable_set('update_notify_emails', array('deven@precisionintermedia.com' ));
+  
+  // IMCE
+  variable_set('imce_settings_thumb_method', "scale");
+  variable_set('imce_roles_profiles', unserialize('a:4:{i:4;a:3:{s:6:"weight";s:1:"0";s:10:"module_pid";s:1:"2";s:10:"public_pid";s:1:"2";}i:3;a:3:{s:6:"weight";s:1:"0";s:10:"module_pid";s:1:"1";s:10:"public_pid";s:1:"1";}i:2;a:3:{s:6:"weight";i:11;s:10:"module_pid";i:0;s:10:"public_pid";i:0;}i:1;a:3:{s:6:"weight";i:12;s:10:"module_pid";i:0;s:10:"public_pid";i:0;}}') );
+  variable_set('imce_profiles', unserialize('a:1:{i:1;a:11:{s:4:"name";s:11:"Site Editor";s:7:"usertab";i:1;s:8:"filesize";s:1:"0";s:5:"quota";s:1:"0";s:7:"tuquota";s:1:"0";s:10:"extensions";s:1:"*";s:10:"dimensions";s:9:"1200x1200";s:7:"filenum";s:1:"0";s:11:"directories";a:1:{i:0;a:10:{s:4:"name";s:1:".";s:6:"subnav";i:1;s:6:"browse";i:1;s:6:"upload";i:1;s:5:"thumb";i:1;s:6:"delete";i:1;s:6:"resize";i:1;s:4:"crop";i:1;s:5:"mkdir";i:1;s:5:"rmdir";i:1;}}s:10:"thumbnails";a:5:{i:0;a:4:{s:4:"name";s:5:"Small";s:10:"dimensions";s:5:"90x90";s:6:"prefix";s:6:"small_";s:6:"suffix";s:0:"";}i:1;a:4:{s:4:"name";s:6:"Medium";s:10:"dimensions";s:7:"120x120";s:6:"prefix";s:7:"medium_";s:6:"suffix";s:0:"";}i:2;a:4:{s:4:"name";s:5:"Large";s:10:"dimensions";s:7:"180x180";s:6:"prefix";s:6:"large_";s:6:"suffix";s:0:"";}i:3;a:4:{s:4:"name";s:7:"X-Large";s:10:"dimensions";s:7:"250x250";s:6:"prefix";s:7:"xlarge_";s:6:"suffix";s:0:"";}i:4;a:4:{s:4:"name";s:4:"Full";s:10:"dimensions";s:7:"960x960";s:6:"prefix";s:5:"full_";s:6:"suffix";s:0:"";}}s:8:"mkdirnum";s:1:"0";}}') );
+  variable_set('imce_custom_process', array('imce_mkdir_process_profile'=>1) );
+  variable_set('imce_custom_content', array('imce_mkdir_content'=>1) );
+  
+  // Captcha
+  variable_set('captcha_administration_mode', 1);
+  variable_set('captcha_default_challenge', "image_captcha/Image" );
+  variable_set('captcha_placement_map_cache', unserialize('a:1:{s:17:"search_block_form";a:3:{s:4:"path";a:0:{}s:3:"key";s:7:"actions";s:6:"weight";i:99;}}') );
+  
+  
+    /* ATTEMPT CK EDITOR CONFIG */
+$ckconfig = <<<EOT
+a:33:{s:2:"ss";s:1:"2";s:7:"default";s:1:"t";s:11:"show_toggle";s:1:"t";s:7:"uicolor";s:7:"default";s:12:"uicolor_user";s:7:"default";s:7:"toolbar";s:706:"[
+    ['Source'],
+    ['Cut','Copy','Paste','PasteText','PasteFromWord','-','SpellChecker', 'Scayt'],
+    ['Undo','Redo','Find','Replace','-','SelectAll','RemoveFormat'],
+    ['Image','Media','Flash','Table','HorizontalRule','Smiley','SpecialChar','Iframe'],
+    '/',
+    ['Bold','Italic','Underline','Strike','-','Subscript','Superscript'],
+    ['NumberedList','BulletedList','-','Outdent','Indent','Blockquote','CreateDiv'],
+    ['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock','-','BidiLtr','BidiRtl'],
+    ['Link','Unlink','Anchor', 'Linkit'],
+    ['DrupalBreak'],
+    '/',
+    ['Format','Font','FontSize'],
+    ['TextColor','BGColor'],
+    ['Maximize', 'ShowBlocks']
+]
+    ";s:6:"expand";s:1:"t";s:5:"width";s:4:"100%";s:4:"lang";s:2:"en";s:9:"auto_lang";s:1:"t";s:18:"language_direction";s:7:"default";s:10:"enter_mode";s:2:"br";s:16:"shift_enter_mode";s:1:"p";s:11:"font_format";s:35:"p;div;pre;address;h1;h2;h3;h4;h5;h6";s:17:"custom_formatting";s:1:"f";s:10:"formatting";a:1:{s:25:"custom_formatting_options";a:6:{s:6:"indent";s:6:"indent";s:15:"breakBeforeOpen";s:15:"breakBeforeOpen";s:14:"breakAfterOpen";s:14:"breakAfterOpen";s:15:"breakAfterClose";s:15:"breakAfterClose";s:16:"breakBeforeClose";i:0;s:10:"pre_indent";i:0;}}s:8:"css_mode";s:5:"theme";s:8:"css_path";s:0:"";s:9:"css_style";s:5:"theme";s:11:"styles_path";s:0:"";s:11:"filebrowser";s:4:"imce";s:17:"filebrowser_image";s:0:"";s:17:"filebrowser_flash";s:0:"";s:13:"UserFilesPath";s:5:"%b%f/";s:21:"UserFilesAbsolutePath";s:7:"%d%b%f/";s:20:"ckeditor_load_method";s:11:"ckeditor.js";s:22:"ckeditor_load_time_out";s:1:"0";s:21:"forcePasteAsPlainText";s:1:"f";s:13:"html_entities";s:1:"f";s:17:"scayt_autoStartup";s:1:"t";s:15:"theme_config_js";s:1:"f";s:7:"js_conf";s:0:"";s:11:"loadPlugins";a:2:{s:12:"drupalbreaks";a:5:{s:4:"name";s:12:"drupalbreaks";s:4:"desc";s:51:"Plugin for inserting Drupal teaser and page breaks.";s:4:"path";s:25:"%plugin_dir%drupalbreaks/";s:7:"buttons";a:1:{s:11:"DrupalBreak";a:2:{s:5:"label";s:11:"DrupalBreak";s:4:"icon";s:22:"images/drupalbreak.png";}}s:7:"default";s:1:"t";}s:11:"tableresize";a:5:{s:4:"name";s:11:"tableresize";s:4:"desc";s:19:"Table Resize plugin";s:4:"path";s:33:"%editor_path%plugins/tableresize/";s:7:"buttons";b:0;s:7:"default";s:1:"t";}}}
+EOT;
+  db_update('ckeditor_settings')
+    ->fields( array('settings' => unserialize($ckconfig)) )
+    ->condition('name', 'Full')
+    ->execute();
+  
+}
+
+
+/**
+ * Add user permissions
+ */
+function piadvanced_user_permissions() {
+  // Enable default permissions for system roles.
+  //$filtered_html_permission = filter_permission_name($filtered_html_format);
+  user_role_grant_permissions(DRUPAL_ANONYMOUS_RID, array('access content')); //, $filtered_html_permission));
+  user_role_grant_permissions(DRUPAL_AUTHENTICATED_RID, array('access content')); //, $filtered_html_permission));
+
+  // Create a default role for site administrators, with all available permissions assigned.
+  $admin_role = new stdClass();
+  $admin_role->name = 'Pi Admin';
+  $admin_role->weight = 2;
+  user_role_save($admin_role);
+  user_role_grant_permissions($admin_role->rid, array_keys(module_invoke_all('permission')));
+  // Set this as the administrator role.
+  variable_set('user_admin_role', $admin_role->rid);
+
+  // Assign user 1 the "administrator" role.
+  db_insert('users_roles')
+    ->fields(array('uid' => 1, 'rid' => $admin_role->rid))
+    ->execute();
+
+  // Additional Configuration
+  	
+  // Create a default role for site editors, with all available permissions assigned.
+  $editor_role = new stdClass();
+  $editor_role->name = 'site editor';
+  $editor_role->weight = 3;
+  user_role_save($editor_role);
+  
+  $permissions = array( 'access content',
+						'administer blocks',
+						'crop any image',
+						'crop own images',
+						'edit meta tags',
+						'use panels dashboard',
+						'view pane admin links',
+						'search content',
+						'access user profiles',
+						'use panels in place editing',
+						'access contextual links',
+						'access dashboard',
+						'use text format full_html',
+						'administer menu',
+						'access overlay',
+						'set page title',
+						'administer url aliases',
+						'create url aliases',
+						'access administration pages',
+						'access site in maintenance mode',
+						'view the administration theme',
+						'access site reports',
+						'access toolbar',
+						'administer users',
+						'change own username'
+  );
+  $permissions = array_merge($permissions,array_keys(module_invoke('webform','permission')),
+										  array_keys(module_invoke('node','permission')),
+										  array_keys(module_invoke('taxonomy','permission')));
+  user_role_grant_permissions($editor_role->rid, $permissions);
+  
+  // Assign user 3 the "administrator" role.
+  db_insert('users_roles')
+    ->fields(array('uid' => 3, 'rid' => $editor_role->rid))
+    ->execute();
+}
+
+
+/**
+ * Add any navigational elements to the appropriate areas
+ */
+function piadvanced_nav_config() {
+  // Create a Home link in the main menu.
+  $item = array(
+    'link_title' => st('Home'),
+    'link_path' => '<front>',
+    'menu_name' => 'main-menu',
+    'weight' => -10,
+  );
+  menu_link_save($item);
+
+  // Update the menu router information.
+  menu_rebuild();
+}
+
+
+/**
+ *
+ */
+function piadvanced_cleanup() {
+
+  // Switch jQuery Update to ver 1.8 min
+  variable_set('jquery_update_jquery_version', "1.8");
+
+  //  Setup better URL alias
+  variable_set('pathauto_forum_pattern', "[term:vocabulary]/[term:name]");
+  variable_set('pathauto_node_article_pattern', "article/[node:title]");
+  variable_set('pathauto_node_page_pattern', "[node:title]");
+  variable_set('pathauto_node_pattern', "[node:title]");
+  
+
+//  FIX IMCE & CK Editor  (FIXED IMCE?) (FIXED CK?)
+//  Fix input format for blank space new line (FIXED?)
+
+//  Create Homepage as Panel or Node
+
+//  Enable and place superfish menu
+
+  //  Remove "Published by options"
+  variable_set('node_options_article', array( 0 => 'status' ));
+  variable_set('node_options_page', array( 0 => 'status', 1 => 'revision' )); 
+  variable_set('node_options_webform', array( 0 => 'status' ));
+  
+  variable_set('node_preview_article', "0");
+  variable_set('node_preview_page', "0");
+  variable_set('node_preview_webform', "0");
+  
+  variable_set('node_submitted_article', 0);
+  variable_set('node_submitted_page', 0);
+  variable_set('node_submitted_webform', 0);
+  
+  // XML site setup
+  variable_set('xmlsitemap_settings_node_article', array( 'status' => 1, 'priority' => 0.7 ));
+  variable_set('xmlsitemap_settings_node_page', array( 'status' => 1, 'priority' => 0.9 ));
+  variable_set('xmlsitemap_settings_node_webform', array( 'status' => 1, 'priority' => 0.6 ));
+
+
+//  Create Shortcuts
+// FIX NEEDED
+  // Developer
+  $link = array('link_title' => 'Blocks','link_path' => 'admin/structure/block' );
+  shortcut_admin_add_link($link, 'shortcut-set-1', shortcut_max_slots());
+  $link = array('link_title' => 'Menus','link_path' => 'admin/structure/menu' );
+  shortcut_admin_add_link($link, 'shortcut-set-1', shortcut_max_slots());
+  $link = array('link_title' => 'Blocks','link_path' => 'admin/structure/views' );
+  shortcut_admin_add_link($link, 'shortcut-set-1', shortcut_max_slots());
+  $link = array('link_title' => 'Blocks','link_path' => 'admin/structure/types' );
+  shortcut_admin_add_link($link, 'shortcut-set-1', shortcut_max_slots());
+  // Client
+    // Blocks
+	// Menus
+	
+	
+//  Fix Share this into block
+
+
+}

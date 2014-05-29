@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Pi-Advanced Flexslider feature.
+ */
+
+include_once 'piadvanced_flexslider.features.inc';
