@@ -1,6 +1,6 @@
 INSTALL PROFILE CHANGES
 
-- Change
+- Change to this file
 
 - Make “articles” a content type that is a feature, with views, enable if wanted.
 
