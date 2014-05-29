@@ -18,7 +18,7 @@ INSTALL PROFILE CHANGES
 
 - Fix Features
   - Doesn’t actually install
-  = Create the following Features
+  - Create the following Features
      - Flex Slider
      - Announcements 
      - 
