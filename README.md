@@ -21,7 +21,8 @@ INSTALL PROFILE CHANGES
   - Create the following Features
      - Flex Slider
      - Announcements 
-     - 
+     - Photo Gallery
+     - Event Calendars
 
 - Create test account with default values
   - enter editor info for account or have an option for bypass
@@ -38,7 +39,4 @@ INSTALL PROFILE CHANGES
 - Fix IMCE editor to set new role to ‘site editor’
   - capitalize site editor in role creation
 - Fix CKEditor settings
-- 
-
-
 
