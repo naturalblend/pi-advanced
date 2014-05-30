@@ -3,6 +3,11 @@ pi-advanced
 
 INSTALL PROFILE CHANGES
 
+- Fix errors during install
+   - Error after basic module install.   Probably just information "X was installed" message suppression
+   - After 2nd user creation, causes errors
+   - Doesn't install features, no errors shown
+
 - Make “articles” a content type that is a feature, with views, enable if wanted.
 
 - Make a screen for choosing base theme design
