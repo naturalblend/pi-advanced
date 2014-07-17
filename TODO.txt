@@ -24,17 +24,12 @@ INSTALL PROFILE CHANGES
 - Create test account with default values
   - enter editor info for account or have an option for bypass
 
-- Fix Jquery Update
-
 - Change performance settings to development.
 
 - Update ShareThis Settings
-- Fix the Shortcuts settings
 - Set DB Optimize Tables settings
 - Create more date and time formats/types
-- Fix URL alias Patterns
 - Fix IMCE editor to set new role to ‘site editor’
-  - capitalize site editor in role creation
 - Fix CKEditor settings
 - 
 

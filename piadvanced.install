@@ -551,7 +551,10 @@ function piadvanced_user_permissions() {
 						'view pane admin links' => TRUE,
 						'use panels dashboard' => TRUE,
 						'use panels in place editing' => TRUE,
+						'change layouts in place editing' => TRUE,
+						'use ipe with page manager' => TRUE,
 						'create url aliases' => TRUE,
+						'administer url aliases' => TRUE,
 						'search content' => TRUE,
 						'use advanced search' => TRUE,
 						'access contextual links' => TRUE,
@@ -567,12 +570,6 @@ function piadvanced_user_permissions() {
 						
   );
   user_role_change_permissions($editor_role->rid, $permissions);
-  
-  
-  // Assign user 3 the "administrator" role.
-  db_insert('users_roles')
-    ->fields(array('uid' => 3, 'rid' => $editor_role->rid))
-    ->execute();
 }
 
 

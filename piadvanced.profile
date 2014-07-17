@@ -76,26 +76,20 @@ function piadvanced_form_user_register_form_alter(&$form, $form_state) {
     $form['leadin']['#markup'] = t('Create a general user account. This will be your day-to-day account and will be used for all tasks besides site upgrades.');
     $form['leadin']['#weight'] = -300;
 
-    // give user all roles
+    /* give user all roles
     $rids = array_keys($form['account']['roles']['#options']);
     // make sure the authenticated role in included
-    $rids[] = 2;
     $form['account']['roles']['#default_value'] = $rids;
-
+    */
+    
     $hide = array(
-      'account' => array('status', 'notify', 'roles'),
+      'account' => array('status', 'notify'),
     );
 
     foreach ($hide as $sub => $fields) {
       foreach($fields as $field) {
         $form[$sub][$field]['#access'] = FALSE;
       }
-    }
-
-    $unsets = array('field_piadvanced_department');
-
-    foreach($unsets as $unset) {
-      unset($form[$unset]);
     }
   }
 }
@@ -115,10 +109,12 @@ function piadvanced_install_tasks() {
   );
   */
 
+  /*
   $tasks['user_register_form'] = array(
     'display_name' => st('Add General User'),
     'type' => 'form'
   );
+  */
 
   $tasks['piadvanced_install_cleanup_batch'] = array(
     'display_name' => st('Cleanup'),
@@ -179,38 +175,6 @@ function piadvanced_install_cleanup_stage1(&$context) {
  *
  */
 function piadvanced_install_cleanup_stage2(&$context) {
-  global $user;
-  // as a final step we switch to the user created during install if there is one
-  $query = db_select('users', 'u');
-  $query->addField('u', 'uid');
-  $uid = $query->condition('u.uid', 1, '>')
-    ->execute()
-    ->fetchAssoc();
-
-  $new_user = user_load($uid['uid']);
-  if (!empty($new_user)) {
-    module_invoke_all('user_logout', $user);
-    $user = $new_user;
-  }
-
-  // change ownership of top-level nodes to our new user.
-  $nodes = array(
-    variable_get('piadvanced_admissions_node_nid', 0),
-    variable_get('piadvanced_clubs_nid', 0),
-    variable_get('piadvanced_departments_nid', 0),
-    variable_get('piadvanced_homepage_slideshow_node_nid', 0),
-    variable_get('piadvanced_teams_nid', 0),
-  );
-
-  foreach($nodes as $nid) {
-    if (!empty($nid)) {
-      $node = node_load($nid);
-      if (!empty($node)) {
-        $node->uid = $user->uid;
-        node_save($node);
-      }
-    }
-  }
 
   // set some default cache settinsg
   $cache_vars = array(
