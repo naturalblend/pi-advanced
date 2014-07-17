@@ -533,36 +533,41 @@ function piadvanced_user_permissions() {
   $editor_role->weight = 3;
   user_role_save($editor_role);
   
-  $permissions = array( 'access content',
-						'administer blocks',
-						'crop any image',
-						'crop own images',
-						'edit meta tags',
-						'use panels dashboard',
-						'view pane admin links',
-						'search content',
-						'access user profiles',
-						'use panels in place editing',
-						'access contextual links',
-						'access dashboard',
-						'use text format full_html',
-						'administer menu',
-						'access overlay',
-						'set page title',
-						'administer url aliases',
-						'create url aliases',
-						'access administration pages',
-						'access site in maintenance mode',
-						'view the administration theme',
-						'access site reports',
-						'access toolbar',
-						'administer users',
-						'change own username'
-  );
-  $permissions = array_merge($permissions,array_keys(module_invoke('webform','permission')),
+  $permissions = array_merge(array_keys(module_invoke('webform','permission')),
 										  array_keys(module_invoke('node','permission')),
 										  array_keys(module_invoke('taxonomy','permission')));
   user_role_grant_permissions($editor_role->rid, $permissions);
+  
+  $permissions = array( 'access content' => TRUE,
+						'administer blocks' => TRUE,
+						'use text format full_html' => TRUE,
+						'use text format filtered_html' => TRUE,
+						'crop any image' => TRUE,
+						'crop own images' => TRUE,
+						'administer menu' => TRUE,
+						'access overlay' => TRUE,
+						'set page title' => TRUE,
+						'access dashboard' => TRUE,
+						'view pane admin links' => TRUE,
+						'use panels dashboard' => TRUE,
+						'use panels in place editing' => TRUE,
+						'create url aliases' => TRUE,
+						'search content' => TRUE,
+						'use advanced search' => TRUE,
+						'access contextual links' => TRUE,
+						'access administration pages' => TRUE,
+						'access site in maintenance mode' => TRUE,
+						'access toolbar' => TRUE,
+						'access user profiles' => TRUE,
+						'administer users' => TRUE,
+						'change own username' => TRUE,
+						'view the administration theme' => TRUE,
+						'access site reports' => TRUE,
+						
+						
+  );
+  user_role_change_permissions($editor_role->rid, $permissions);
+  
   
   // Assign user 3 the "administrator" role.
   db_insert('users_roles')
@@ -633,14 +638,17 @@ function piadvanced_cleanup() {
 //  Create Shortcuts
 // FIX NEEDED
   // Developer
+  $shortcut_set = new stdClass();
+  $shortcut_set->set_name = 'shortcut-set-1';
   $link = array('link_title' => 'Blocks','link_path' => 'admin/structure/block' );
-  shortcut_admin_add_link($link, 'shortcut-set-1', shortcut_max_slots());
+  shortcut_admin_add_link($link, $shortcut_set, shortcut_max_slots());
   $link = array('link_title' => 'Menus','link_path' => 'admin/structure/menu' );
-  shortcut_admin_add_link($link, 'shortcut-set-1', shortcut_max_slots());
-  $link = array('link_title' => 'Blocks','link_path' => 'admin/structure/views' );
-  shortcut_admin_add_link($link, 'shortcut-set-1', shortcut_max_slots());
-  $link = array('link_title' => 'Blocks','link_path' => 'admin/structure/types' );
-  shortcut_admin_add_link($link, 'shortcut-set-1', shortcut_max_slots());
+  shortcut_admin_add_link($link, $shortcut_set, shortcut_max_slots());
+  $link = array('link_title' => 'Views','link_path' => 'admin/structure/views' );
+  shortcut_admin_add_link($link, $shortcut_set, shortcut_max_slots());
+  $link = array('link_title' => 'Content Types','link_path' => 'admin/structure/types' );
+  shortcut_admin_add_link($link, $shortcut_set, shortcut_max_slots());
+  shortcut_set_save($shortcut_set);
   // Client
     // Blocks
 	// Menus

@@ -121,66 +121,52 @@ dependencies[] = features
 files[] = piadvanced.profile
 
 
-
-
 feature_sets[piadvanced_announcements][title] = 'Announcements'
-feature_sets[piadvanced_announcements][description] = 'Add announcements and news items to your website.'
+feature_sets[piadvanced_announcements][description] = 'Add Announcements and news items to your website that will show in small areas.'
 feature_sets[piadvanced_announcements][icon] = 'feature_set_icons/announcements.png'
 feature_sets[piadvanced_announcements][enable][] = piadvanced_announcements
-feature_sets[piadvanced_announcements][enable][] = piadvanced_announcements_permissions
-feature_sets[piadvanced_announcements][enable][] = piadvanced_announcements_ui
-feature_sets[piadvanced_announcements][enable][] = piadvanced_administrative_unit_announcements
 feature_sets[piadvanced_announcements][disable][] = piadvanced_announcements
-feature_sets[piadvanced_announcements][disable][] = piadvanced_announcements_permissions
-feature_sets[piadvanced_announcements][disable][] = piadvanced_announcements_ui
-feature_sets[piadvanced_announcements][disable][] = piadvanced_administrative_unit_announcements
 
 
-
-feature_sets[piadvanced_slideshow][title] = 'Slideshow'
-feature_sets[piadvanced_slideshow][description] = 'Add a custom slideshow for your homepage.'
+feature_sets[piadvanced_slideshow][title] = 'Slideshow - Basic'
+feature_sets[piadvanced_slideshow][description] = 'Add a basic slideshow for your homepage.'
 feature_sets[piadvanced_slideshow][icon] = 'feature_set_icons/slideshow.png'
 feature_sets[piadvanced_slideshow][enable][] = flexslider
 feature_sets[piadvanced_slideshow][enable][] = piadvanced_slideshow
-feature_sets[piadvanced_slideshow][enable][] = piadvanced_slideshow_ui
-feature_sets[piadvanced_slideshow][enable][] = piadvanced_homepage_slideshow_node
 feature_sets[piadvanced_slideshow][disable][] = piadvanced_slideshow
-feature_sets[piadvanced_slideshow][disable][] = piadvanced_slideshow_ui
-feature_sets[piadvanced_slideshow][disable][] = piadvanced_homepage_slideshow_node
-feature_sets[piadvanced_slideshow][uninstall][] = piadvanced_homepage_slideshow_node
 
 
-
-feature_sets[piadvanced_gallery][title] = 'Galleries'
-feature_sets[piadvanced_gallery][description] = 'Add photo galleries to your website.'
-feature_sets[piadvanced_gallery][icon] = 'feature_set_icons/gallery.png'
-feature_sets[piadvanced_gallery][enable][] = piadvanced_gallery
-feature_sets[piadvanced_gallery][enable][] = piadvanced_gallery_permissions
-feature_sets[piadvanced_gallery][enable][] = piadvanced_gallery_ui
-feature_sets[piadvanced_gallery][enable][] = piadvanced_administrative_unit_galleries
-feature_sets[piadvanced_gallery][disable][] = piadvanced_gallery
-feature_sets[piadvanced_gallery][disable][] = piadvanced_gallery_permissions
-feature_sets[piadvanced_gallery][enable][] = piadvanced_gallery_ui
-feature_sets[piadvanced_gallery][enable][] = piadvanced_administrative_unit_galleries
+feature_sets[piadvanced_slideshow][title] = 'Slideshow - Flexslider'
+feature_sets[piadvanced_slideshow][description] = 'Add a flexslider slideshow for your homepage.'
+feature_sets[piadvanced_slideshow][icon] = 'feature_set_icons/slideshow.png'
+feature_sets[piadvanced_slideshow][enable][] = flexslider
+feature_sets[piadvanced_slideshow][enable][] = flexslider_views
+feature_sets[piadvanced_slideshow][enable][] = piadvanced_flexslider
+feature_sets[piadvanced_slideshow][disable][] = piadvanced_flexslider
 
 
+;feature_sets[piadvanced_gallery][title] = 'Galleries'
+;feature_sets[piadvanced_gallery][description] = 'Add photo galleries to your website.'
+;feature_sets[piadvanced_gallery][icon] = 'feature_set_icons/gallery.png'
+;feature_sets[piadvanced_gallery][enable][] = piadvanced_gallery
+;feature_sets[piadvanced_gallery][disable][] = piadvanced_gallery
 
-feature_sets[piadvanced_events][title] = 'Calendar and Events'
-feature_sets[piadvanced_events][description] = 'Adds calendars and events to your website.'
-feature_sets[piadvanced_events][icon] = 'feature_set_icons/events.png'
-feature_sets[piadvanced_events][enable][] = piadvanced_events
-feature_sets[piadvanced_events][enable][] = piadvanced_events_permissions
-feature_sets[piadvanced_events][enable][] = piadvanced_events_ui
-feature_sets[piadvanced_events][enable][] = piadvanced_administrative_unit_events
-feature_sets[piadvanced_events][enable][] = fullcalendar
-feature_sets[piadvanced_events][enable][] = fullcalendar_options
-feature_sets[piadvanced_events][enable][] = date
-feature_sets[piadvanced_events][disable][] = piadvanced_events
-feature_sets[piadvanced_events][disable][] = piadvanced_events_permissions
-feature_sets[piadvanced_events][disable][] = piadvanced_events_ui
-feature_sets[piadvanced_events][disable][] = piadvanced_administrative_unit_events
-feature_sets[piadvanced_events][disable][] = fullcalendar
-feature_sets[piadvanced_events][disable][] = fullcalendar_options
-feature_sets[piadvanced_events][disable][] = date
-feature_sets[piadvanced_events][uninstall][] = piadvanced_events_ui
 
+;feature_sets[piadvanced_events][title] = 'Calendar and Events'
+;feature_sets[piadvanced_events][description] = 'Adds calendars and events to your website.'
+;feature_sets[piadvanced_events][icon] = 'feature_set_icons/events.png'
+;feature_sets[piadvanced_events][enable][] = piadvanced_events
+;feature_sets[piadvanced_events][enable][] = piadvanced_events_permissions
+;feature_sets[piadvanced_events][enable][] = piadvanced_events_ui
+;feature_sets[piadvanced_events][enable][] = piadvanced_administrative_unit_events
+;feature_sets[piadvanced_events][enable][] = fullcalendar
+;feature_sets[piadvanced_events][enable][] = fullcalendar_options
+;feature_sets[piadvanced_events][enable][] = date
+;feature_sets[piadvanced_events][disable][] = piadvanced_events
+;feature_sets[piadvanced_events][disable][] = piadvanced_events_permissions
+;feature_sets[piadvanced_events][disable][] = piadvanced_events_ui
+;feature_sets[piadvanced_events][disable][] = piadvanced_administrative_unit_events
+;feature_sets[piadvanced_events][disable][] = fullcalendar
+;feature_sets[piadvanced_events][disable][] = fullcalendar_options
+;feature_sets[piadvanced_events][disable][] = date
+;feature_sets[piadvanced_events][uninstall][] = piadvanced_events_ui

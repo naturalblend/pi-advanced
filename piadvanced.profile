@@ -230,8 +230,8 @@ function piadvanced_install_cleanup_stage2(&$context) {
   // theme_disable(array('bartik'));
 
   $features_revert = array(
-    'piadvanced_administrative_unit_announcements', // required for og permissions
-    'piadvanced_administrative_unit_galleries', // required for og permissions
+    //'piadvanced_administrative_unit_announcements', // required for og permissions
+    //'piadvanced_administrative_unit_galleries', // required for og permissions
   );
 
   foreach ($features_revert as $module) {

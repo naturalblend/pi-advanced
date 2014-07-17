@@ -1,17 +1,15 @@
 INSTALL PROFILE CHANGES
 
-- Change to this file
+- Fix errors during install
+    - Doesn't install features, no errors shown
 
-- Make “articles” a content type that is a feature, with views, enable if wanted.
+- Make “Articles” a content type that is a feature, with views, enable if wanted.
 
 - Make a screen for choosing base theme design
    - auto mate setup 
      - Enable, name, and default settings
      - Make fresh.css with basic consistent css
      - Enable IE7-8+ support modules
-
-- Remove error caused by basic module install (2nd screen)
-    - Module cannot be null error
  
 - Remove Site name as “localhost”
 
@@ -20,7 +18,8 @@ INSTALL PROFILE CHANGES
   = Create the following Features
      - Flex Slider
      - Announcements 
-     - 
+     - Photo Gallery
+     - Event Calendars
 
 - Create test account with default values
   - enter editor info for account or have an option for bypass
